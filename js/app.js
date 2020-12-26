@@ -14,6 +14,7 @@ class Game {
     }
 
     inicializar() {
+        this.select_color = this.select_color.bind(this);
         btnEmpezar.classList.add('hide');
         this.level = 1;
         this.colors = {celeste, violeta, naranja, verde};
@@ -25,6 +26,7 @@ class Game {
 
     next_level() {
         this.illuminate_sequence();
+        this.addEventsClicksListener();
     }
 
     transform_number_to_color(number) {
@@ -54,6 +56,14 @@ class Game {
 
     turn_off_color(color) {
         this.colors[color].classList.remove('light');
+    }
+
+    addEventsClicksListener() {
+        Object.keys(this.colors).forEach(index => this.colors[index].addEventListener('click', this.select_color));
+    }
+
+    select_color(ev) {
+        console.log(this);
     }
 }
 
