@@ -3,11 +3,12 @@ const celeste = document.getElementById('celeste');
 const violeta = document.getElementById('violeta');
 const naranja = document.getElementById('naranja');
 const verde = document.getElementById('verde');
-const MAX_LEVEL = 10;
+const MAX_LEVEL = 1;
 
 class Game {
 
     constructor() {
+        this.inicializar = this.inicializar.bind(this);
         this.inicializar();
         this.generate_sequence();
         setTimeout(this.next_level, 500);
@@ -16,9 +17,17 @@ class Game {
     inicializar() {
         this.select_color = this.select_color.bind(this);
         this.next_level = this.next_level.bind(this);
-        btnEmpezar.classList.add('hide');
+        this.toggle_btnEmpezar()
         this.level = 1;
         this.colors = {celeste, violeta, naranja, verde};
+    }
+    
+    toggle_btnEmpezar() {
+        if (btnEmpezar.classList.contains('hide')) {
+            btnEmpezar.classList.remove('hide');
+        } else {
+            btnEmpezar.classList.add('hide');
+        }
     }
 
     generate_sequence() {
@@ -91,14 +100,27 @@ class Game {
                 this.level++;
                 this.removeEventsClicksListener()
                 if(this.level === (MAX_LEVEL + 1)) {
-                    //Ganó
+                    this.winner()
                 } else {
                     setTimeout(this.next_level, 1500)
                 }
             }
         } else {
-            // Perdió
+            this.loser()
         }
+    }
+
+    winner() {
+        swal('Simon dice', 'Felicitaciones ganaste el juego!!', 'success')
+            .then(this.inicializar);
+    }
+
+    loser() {
+        swal('Simon dice', 'Lo lamentamos, perdiste :( !!', 'error')
+            .then(() => {
+                this.removeEventsClicksListener()
+                this.inicializar()
+            });
     }
 }
 
