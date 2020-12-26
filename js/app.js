@@ -3,28 +3,30 @@ const celeste = document.getElementById('celeste');
 const violeta = document.getElementById('violeta');
 const naranja = document.getElementById('naranja');
 const verde = document.getElementById('verde');
+const MAX_LEVEL = 10;
 
 class Game {
 
     constructor() {
-
         this.inicializar();
         this.generate_sequence();
-        this.next_level();
+        setTimeout(this.next_level, 500);
     }
 
     inicializar() {
         this.select_color = this.select_color.bind(this);
+        this.next_level = this.next_level.bind(this);
         btnEmpezar.classList.add('hide');
         this.level = 1;
         this.colors = {celeste, violeta, naranja, verde};
     }
 
     generate_sequence() {
-        this.sequence = new Array(10).fill(0).map(n => Math.floor(Math.random() * 4));
+        this.sequence = new Array(MAX_LEVEL).fill(0).map(n => Math.floor(Math.random() * 4));
     }
 
     next_level() {
+        this.sublevel = 0;
         this.illuminate_sequence();
         this.addEventsClicksListener();
     }
@@ -39,6 +41,19 @@ class Game {
                 return 'naranja';
             case 3:
                 return 'verde';
+        }
+    }
+
+    transform_color_to_number(color) {
+        switch (color) {
+            case 'celeste':
+                return 0;
+            case 'violeta':
+                return 1;
+            case 'naranja':
+                return 2;
+            case 'verde':
+                return 3;
         }
     }
 
@@ -61,9 +76,29 @@ class Game {
     addEventsClicksListener() {
         Object.keys(this.colors).forEach(index => this.colors[index].addEventListener('click', this.select_color));
     }
+    
+    removeEventsClicksListener() {
+        Object.keys(this.colors).forEach(index => this.colors[index].removeEventListener('click', this.select_color));
+    }
 
     select_color(ev) {
-        console.log(this);
+        const name_color = ev.target.dataset.color;
+        const color_number = this.transform_color_to_number(name_color);
+        this.illuminate_color(name_color);
+        if(color_number == this.sequence[this.sublevel]) {
+            this.sublevel++;
+            if(this.sublevel === this.level) {
+                this.level++;
+                this.removeEventsClicksListener()
+                if(this.level === (MAX_LEVEL + 1)) {
+                    //Ganó
+                } else {
+                    setTimeout(this.next_level, 1500)
+                }
+            }
+        } else {
+            // Perdió
+        }
     }
 }
 
